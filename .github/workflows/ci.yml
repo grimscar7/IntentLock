@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check web/ exists
+        id: check
+        run: |
+          if [ -f web/package.json ]; then echo "found=true" >> $GITHUB_OUTPUT; else echo "found=false" >> $GITHUB_OUTPUT; echo "No web/ yet - skipping"; fi
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.found == 'true'
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        if: steps.check.outputs.found == 'true'
+        working-directory: web
+        run: npm ci
+      - name: Lint
+        if: steps.check.outputs.found == 'true'
+        working-directory: web
+        run: npm run lint --if-present
+      - name: Build
+        if: steps.check.outputs.found == 'true'
+        working-directory: web
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_PAYPAL_CLIENT_ID: sb
+
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: intentlock
+          POSTGRES_PASSWORD: intentlock
+          POSTGRES_DB: intentlock_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://intentlock:intentlock@localhost:5432/intentlock_test
+      APP_ENV: test
+      AI_PROVIDER: mock
+      PAYPAL_MODE: mock
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check api/ exists
+        id: check
+        run: |
+          if [ -f api/requirements.txt ]; then echo "found=true" >> $GITHUB_OUTPUT; else echo "found=false" >> $GITHUB_OUTPUT; echo "No api/ yet - skipping"; fi
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.found == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install
+        if: steps.check.outputs.found == 'true'
+        working-directory: api
+        run: pip install -r requirements.txt
+      - name: Migrate
+        if: steps.check.outputs.found == 'true' && hashFiles('api/alembic.ini') != ''
+        working-directory: api
+        run: alembic upgrade head
+      - name: Test
+        if: steps.check.outputs.found == 'true'
+        working-directory: api
+        run: |
+          pytest -q || code=$?
+          # exit code 5 = no tests collected yet; don't fail on that
+          if [ "${code:-0}" -ne 0 ] && [ "${code:-0}" -ne 5 ]; then exit $code; fi
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
