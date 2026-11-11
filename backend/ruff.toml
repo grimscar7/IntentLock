@@ -1,0 +1,15 @@
+line-length = 120
+target-version = "py313"
+
+[lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",  # line length
+    "B008",  # Depends in FastAPI argument default
+]
+
+[lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
+"backend/api/tests/*" = ["S101", "F841", "E402", "F401"]
+"backend/scripts/*" = ["E402", "F401"]
+"backend/migrations/*" = ["W291", "E501", "E402", "F401"]
