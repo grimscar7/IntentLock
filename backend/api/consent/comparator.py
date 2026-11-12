@@ -8,6 +8,18 @@ from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
 from backend.api.schemas.validation import Change
 
+PRIORITY_ORDER = [
+    ReasonCode.ITEM_MISMATCH,
+    ReasonCode.MERCHANT_MISMATCH,
+    ReasonCode.CURRENCY_MISMATCH,
+    ReasonCode.QUANTITY_MISMATCH,
+    ReasonCode.AMOUNT_MISMATCH,
+    ReasonCode.QUOTE_CHANGED,
+    ReasonCode.POLICY_CHANGED,
+    ReasonCode.PRODUCT_VERSION_CHANGED,
+    ReasonCode.REQUIREMENTS_NO_LONGER_MET,
+]
+
 
 def compare(
     approval: ApprovalSnapshot,
@@ -170,20 +182,7 @@ def compare(
                 )
             )
 
-    # Priority order resolution
-    priority_order = [
-        ReasonCode.ITEM_MISMATCH,
-        ReasonCode.MERCHANT_MISMATCH,
-        ReasonCode.CURRENCY_MISMATCH,
-        ReasonCode.QUANTITY_MISMATCH,
-        ReasonCode.AMOUNT_MISMATCH,
-        ReasonCode.QUOTE_CHANGED,
-        ReasonCode.POLICY_CHANGED,
-        ReasonCode.PRODUCT_VERSION_CHANGED,
-        ReasonCode.REQUIREMENTS_NO_LONGER_MET,
-    ]
-
-    for p_code in priority_order:
+    for p_code in PRIORITY_ORDER:
         if p_code in detected_codes:
             return changes, p_code
 
