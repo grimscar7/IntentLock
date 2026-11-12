@@ -262,3 +262,57 @@ mypy --explicit-package-bases backend/api
 - **`backend/api/tests/e2e/test_concurrency.py`**: Race condition checks and double-capture prevention.
 - **`backend/api/tests/integration/test_db_integrity.py`**: Foreign key integrity, unique constraints, and transaction rollbacks.
 - **`backend/api/tests/test_coverage_gaps.py`**: Comprehensive edge coverage closing all defensive statement branches (100% coverage).
+
+
+---
+
+## 🛠️ Tech Stack Matrix
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **API Framework** | FastAPI (Python 3.13) | High-performance asynchronous REST endpoints & OpenAPI specs |
+| **Data Validation** | Pydantic v2 | Strict schema enforcement, input coercion guards, and model serialization |
+| **ORM & Database** | SQLAlchemy 2.0 & Alembic | Robust relational data models, transactional isolation, and schema migrations |
+| **Database** | PostgreSQL / SQLite | ACID compliance, row locking, and foreign key cascades |
+| **Payment Gateway** | PayPal Orders & Capture API | Industry standard checkout execution in PayPal Sandbox |
+| **Testing** | Pytest, pytest-cov | 100% statement coverage verification and automated regressions |
+| **Linting & Typing** | Ruff, Mypy | Strict formatting, linting rules, and explicit static typing |
+
+---
+
+## 📦 Production Deployment
+
+### Docker Deployment
+Build and run the production container:
+```bash
+# Build the Docker image
+docker build -t intentlock-backend -f backend/Dockerfile .
+
+# Run container on port 8000
+docker run -d -p 8000:8000 --env-file backend/.env --name intentlock-api intentlock-backend
+```
+
+### Google Cloud Run Deployment
+Deploy directly using Google Cloud SDK:
+```bash
+gcloud run deploy intentlock-backend \
+  --source . \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+---
+
+## 🤝 Contributing & Code Standards
+
+1. **Fork & Branch**: Create feature branches starting from `backend` (e.g. `feat/new-payment-rail`).
+2. **Coverage Invariant**: Every pull request must maintain **100% statement coverage**. Run `pytest --cov=backend/api --cov-report=term-missing`.
+3. **Format & Type Check**: All code must pass `ruff check --config backend/ruff.toml backend` and `mypy --explicit-package-bases backend/api`.
+4. **Commits**: Follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
+
+---
+
+## 📄 License
+
+This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
