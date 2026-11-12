@@ -167,3 +167,98 @@ Verify service readiness:
 curl http://localhost:8000/health
 # Response: {"status": "ok", "database": "connected"}
 ```
+
+
+---
+
+## 📡 API Reference & End-to-End Walkthrough
+
+### Key Endpoints
+
+| Category | Method | Path | Description |
+| :--- | :--- | :--- | :--- |
+| **Intents** | `POST` | `/api/intents` | Create a new buyer purchase intent from text |
+| **Intents** | `GET` | `/api/intents/{id}/options` | Fetch eligible catalog options with explainability |
+| **Intents** | `POST` | `/api/intents/{id}/requirements` | Update budget or specs (chains new intent) |
+| **Quotes** | `POST` | `/api/quotes` | Generate server-authoritative quote |
+| **Quotes** | `GET` | `/api/quotes/{id}` | Retrieve quote details |
+| **Quotes** | `POST` | `/api/quotes/{id}/requote` | Re-quote an invalidated or expired quote |
+| **Quotes** | `GET` | `/api/quotes/{id}/events` | Paginated chronological audit event timeline |
+| **Approvals** | `POST` | `/api/approvals` | Grant user consent and create `ApprovalSnapshot` |
+| **Approvals** | `GET` | `/api/approvals/{id}` | Inspect approval snapshot status |
+| **Approvals** | `POST` | `/api/approvals/{id}/validate` | Pre-flight dry-run validation check |
+| **Catalog Demo** | `PATCH` | `/api/demo/products/{id}` | Simulate merchant price/term updates (Admin token) |
+| **Catalog Demo** | `POST` | `/api/demo/reset` | Reset demo products back to pristine seed state |
+
+### Complete Checkout & Tamper Simulation Flow
+
+```bash
+# 1. Register buyer intent
+curl -X POST http://localhost:8000/api/intents \
+  -H "Content-Type: application/json" \
+  -H "X-User-Id: user_buyer" \
+  -d '{"raw_text": "Need a refurbished laptop under $500 with 16GB RAM and 30-day return policy"}'
+
+# 2. Query matching products with grounded explanations
+curl http://localhost:8000/api/intents/<INTENT_ID>/options \
+  -H "X-User-Id: user_buyer"
+
+# 3. Create quote for qualified item (e.g., laptop_b)
+curl -X POST http://localhost:8000/api/quotes \
+  -H "Content-Type: application/json" \
+  -H "X-User-Id: user_buyer" \
+  -d '{"intent_id": "<INTENT_ID>", "product_id": "laptop_b", "quantity": 1}'
+
+# 4. Lock user consent (produces active ApprovalSnapshot)
+curl -X POST http://localhost:8000/api/approvals \
+  -H "Content-Type: application/json" \
+  -H "X-User-Id: user_buyer" \
+  -d '{"quote_id": "<QUOTE_ID>"}'
+
+# 5. Pre-flight check before PayPal Order creation
+curl -X POST http://localhost:8000/api/approvals/<APPROVAL_ID>/validate \
+  -H "X-User-Id: user_buyer"
+# -> {"allowed": true, "reason_code": "OK", "requires_new_approval": false}
+
+# 6. Simulate merchant price spike while buyer is at checkout
+curl -X PATCH http://localhost:8000/api/demo/products/laptop_b \
+  -H "Content-Type: application/json" \
+  -H "X-Demo-Admin-Token: intentlock_demo_secret_2026" \
+  -d '{"price_minor": 55000}'
+
+# 7. Pre-flight check again -> Instantly blocked!
+curl -X POST http://localhost:8000/api/approvals/<APPROVAL_ID>/validate \
+  -H "X-User-Id: user_buyer"
+# -> {"allowed": false, "reason_code": "APPROVAL_INVALIDATED", "requires_new_approval": true}
+```
+
+---
+
+## 🧪 Testing & Quality Gates
+
+IntentLock maintains a strict **100% line coverage standard** across every backend module.
+
+### Run All Tests with Coverage Report
+```bash
+python -m pytest backend/api/tests --cov=backend/api --cov-report=term-missing
+```
+
+### Static Analysis & Type Checking
+```bash
+# Code style and linting with Ruff
+ruff check --config backend/ruff.toml backend
+
+# Static typing validation with Mypy
+mypy --explicit-package-bases backend/api
+```
+
+### Test Suite Structure
+- **`backend/api/tests/test_phase1_foundation.py`**: Models, enums, DB schema invariants, and catalog seeding.
+- **`backend/api/tests/test_phase2_intents_quotes.py`**: Intent extraction, options evaluation, dynamic quoting, and TTL expiration.
+- **`backend/api/tests/test_phase4_consent_validators.py`**: Dual-gate consent validation, snapshot immutability, and consumption atomicity.
+- **`backend/api/tests/test_phase5_merchant_changes.py`**: Merchant update handling, auto-invalidation, and requote flows.
+- **`backend/api/tests/e2e/test_journeys.py`**: End-to-end buyer workflows and edge cases.
+- **`backend/api/tests/e2e/test_security.py`**: Prompt injection defense, SQL injection, IDOR auth isolation, and tamper resistance.
+- **`backend/api/tests/e2e/test_concurrency.py`**: Race condition checks and double-capture prevention.
+- **`backend/api/tests/integration/test_db_integrity.py`**: Foreign key integrity, unique constraints, and transaction rollbacks.
+- **`backend/api/tests/test_coverage_gaps.py`**: Comprehensive edge coverage closing all defensive statement branches (100% coverage).
