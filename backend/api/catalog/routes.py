@@ -1,9 +1,6 @@
 """Catalog exploration and grounded options evaluation routes."""
 
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
 from backend.api.ai.service import get_ai_client, validate_and_ground_explanations
 from backend.api.auth import get_current_user, require_demo_admin
 from backend.api.catalog.service import (
@@ -24,6 +21,8 @@ from backend.api.schemas import (
     ProductUpdateResponse,
     ProductVersionResponse,
 )
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api", tags=["Catalog & Options"])
 

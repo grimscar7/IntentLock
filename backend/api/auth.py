@@ -3,10 +3,9 @@
 import hmac
 
 import jwt
-from fastapi import Header, Request
-
 from backend.api.config import get_settings
 from backend.api.errors import AppError
+from fastapi import Header, Request
 
 
 def get_current_user(
@@ -44,7 +43,7 @@ def get_current_user(
 
     # 2. Development / Test fallback via X-User-Id
     is_dev = settings.ENV.lower() in ("development", "dev", "test")
-    if is_dev and x_user_id:
+    if is_dev and x_user_id and x_user_id.strip():
         return x_user_id.strip()
 
     # 3. Missing authentication

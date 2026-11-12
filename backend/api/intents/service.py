@@ -2,14 +2,13 @@
 
 from typing import Any
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
 from backend.api.ai.service import AIClient
 from backend.api.config import get_settings
 from backend.api.errors import AppError
 from backend.api.models.enums import IntentStatus
 from backend.api.models.intent import Intent
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 def validate_intent_requirements(

@@ -2,11 +2,10 @@
 
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from backend.api.models.base import Base, TimestampMixin, generate_uuid
 from backend.api.models.enums import QuoteStatus
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Quote(Base, TimestampMixin):

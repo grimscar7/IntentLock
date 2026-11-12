@@ -1,8 +1,5 @@
 """API routes for buyer consent approval snapshots and pre-flight validation."""
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
 from backend.api.auth import get_current_user
 from backend.api.consent.service import create_approval, validate_before_create
 from backend.api.database import get_db
@@ -11,6 +8,8 @@ from backend.api.schemas import (
     ApprovalResponse,
     ValidationResult,
 )
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/approvals", tags=["Approvals"])
 

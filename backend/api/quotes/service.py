@@ -2,9 +2,6 @@
 
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
 from backend.api.ai.service import get_ai_client
 from backend.api.audit.service import record_event
 from backend.api.catalog.service import evaluate_product_eligibility
@@ -22,6 +19,8 @@ from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
 from backend.api.schemas.demo import RequoteComparison
 from backend.api.schemas.validation import Change
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 def create_quote(

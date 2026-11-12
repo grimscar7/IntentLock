@@ -1,9 +1,6 @@
 """API routes for binding quote generation, requote, and timeline lookup."""
 
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-
 from backend.api.audit.service import get_quote_timeline
 from backend.api.auth import get_current_user
 from backend.api.database import get_db
@@ -14,6 +11,8 @@ from backend.api.schemas import (
     RequoteResponse,
     TimelineResponse,
 )
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/quotes", tags=["Quotes"])
 

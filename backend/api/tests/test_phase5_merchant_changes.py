@@ -3,8 +3,6 @@
 from datetime import datetime
 
 import pytest
-from sqlalchemy import select
-
 from backend.api.ai.service import FakeAIClient, validate_and_fallback_reword
 from backend.api.audit.service import record_event
 from backend.api.config import get_settings
@@ -15,6 +13,7 @@ from backend.api.models.enums import ApprovalStatus, AuditEventType, QuoteStatus
 from backend.api.models.product_version import ProductVersion
 from backend.api.quotes.service import create_quote
 from backend.scripts.seed import seed_products
+from sqlalchemy import select
 
 ADMIN_TOKEN = get_settings().DEMO_ADMIN_TOKEN
 ADMIN_HEADERS = {"X-Demo-Admin-Token": ADMIN_TOKEN}

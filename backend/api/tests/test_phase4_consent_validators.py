@@ -3,8 +3,6 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import select, update
-
 from backend.api.consent.comparator import compare
 from backend.api.consent.service import (
     consume_approval,
@@ -24,6 +22,7 @@ from backend.api.models import (
     ReasonCode,
 )
 from backend.scripts.seed import seed_products
+from sqlalchemy import select, update
 
 
 @pytest.fixture(autouse=True)

@@ -1,5 +1,6 @@
 """ProductVersion model capturing immutable versioned snapshots of catalog products."""
 
+from backend.api.models.base import Base, TimestampMixin, generate_uuid
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
@@ -9,8 +10,6 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from backend.api.models.base import Base, TimestampMixin, generate_uuid
 
 
 class ProductVersion(Base, TimestampMixin):

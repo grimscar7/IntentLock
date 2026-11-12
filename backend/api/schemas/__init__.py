@@ -3,8 +3,6 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
-
 from backend.api.schemas.demo import (
     DemoResetResponse,
     IntentRequirementsUpdateRequest,
@@ -17,6 +15,7 @@ from backend.api.schemas.demo import (
     TimelineResponse,
 )
 from backend.api.schemas.validation import Change, ValidationResult
+from pydantic import BaseModel, Field
 
 
 # ---------------------------------------------------------

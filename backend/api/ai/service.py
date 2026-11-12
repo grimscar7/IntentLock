@@ -4,14 +4,13 @@ import json
 import re
 from typing import Any
 
-from pydantic import BaseModel, ValidationError
-
 from backend.api.ai.prompts import (
     GROUNDED_EXPLANATION_SYSTEM_PROMPT,
     INTENT_EXTRACTION_SYSTEM_PROMPT,
 )
 from backend.api.config import get_settings
 from backend.api.errors import AppError
+from pydantic import BaseModel, ValidationError
 
 
 class AIIntentExtractionResult(BaseModel):
@@ -58,8 +57,8 @@ def validate_and_fallback_reword(
                     allowed_tokens.add(str(int(val) * 100))
                     if int(val) >= 100:
                         allowed_tokens.add(str(int(val) // 100))
-            except Exception:
-                pass
+            except (ValueError, TypeError, ZeroDivisionError):
+                continue
 
         for c in changes:
             if isinstance(c, dict):
@@ -75,8 +74,8 @@ def validate_and_fallback_reword(
                                     allowed_tokens.add(str(int(val) * 100))
                                     if int(val) >= 100:
                                         allowed_tokens.add(str(int(val) // 100))
-                            except Exception:
-                                pass
+                            except (ValueError, TypeError, ZeroDivisionError):
+                                continue
 
         # Check candidate tokens
         candidate_tokens = re.findall(r"\b\d+(?:\.\d+)?\b", candidate)

@@ -3,14 +3,13 @@
 from datetime import UTC, datetime
 
 import pytest
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-
 from backend.api.models.audit_event import AuditEvent
 from backend.api.models.enums import AuditEventType, QuoteStatus
 from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
 from backend.scripts.seed import seed_products
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 
 @pytest.fixture(autouse=True)

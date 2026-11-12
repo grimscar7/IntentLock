@@ -4,9 +4,6 @@ import logging
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import select, update
-from sqlalchemy.orm import Session
-
 from backend.api.audit.service import record_event
 from backend.api.catalog.service import evaluate_product_eligibility
 from backend.api.config import get_settings
@@ -25,6 +22,8 @@ from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
 from backend.api.schemas.validation import Change, ValidationResult
+from sqlalchemy import select, update
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -90,8 +89,9 @@ def create_approval(user_id: str, quote_id: str, db: Session) -> ApprovalSnapsho
     if not intent:
         raise AppError("QUOTE_NO_LONGER_VALID", "Underlying buyer intent not found", status_code=400)
 
-    is_eligible, _, reasons = evaluate_product_eligibility(product_version, intent.requirements)
-    if not is_eligible or quote.total_minor > intent.requirements.get("max_total_minor", float("inf")):
+    reqs = intent.requirements or {}
+    is_eligible, _, reasons = evaluate_product_eligibility(product_version, reqs)
+    if not is_eligible or quote.total_minor > reqs.get("max_total_minor", float("inf")):
         raise AppError(
             code="QUOTE_NO_LONGER_VALID",
             message="Quote terms no longer satisfy buyer intent requirements",

@@ -2,9 +2,6 @@
 
 from typing import Any
 
-from sqlalchemy import select, update
-from sqlalchemy.orm import Session
-
 from backend.api.audit.service import record_event
 from backend.api.errors import AppError
 from backend.api.models.approval_snapshot import ApprovalSnapshot
@@ -12,6 +9,8 @@ from backend.api.models.enums import ApprovalStatus, AuditEventType, QuoteStatus
 from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
 from backend.scripts.seed import SEED_PRODUCTS
+from sqlalchemy import select, update
+from sqlalchemy.orm import Session
 
 ALLOWED_MUTATION_FIELDS = {"price_minor", "return_days", "available"}
 

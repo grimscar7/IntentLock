@@ -1,10 +1,9 @@
 """PaymentAttempt model for PayPal checkout integration."""
 
-from sqlalchemy import CheckConstraint, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from backend.api.models.base import Base, TimestampMixin, generate_uuid
 from backend.api.models.enums import PaymentAttemptStatus
+from sqlalchemy import CheckConstraint, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class PaymentAttempt(Base, TimestampMixin):

@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     ALLOWED_CATEGORIES: list[str] = ["laptop", "laptops", "electronics"]
     DEFAULT_SHIPPING_MINOR: int = 0
     DEFAULT_TAX_MINOR: int = 0
+    PAYPAL_CLIENT_ID: str = ""
+    PAYPAL_CLIENT_SECRET: str = ""
+    PAYPAL_BASE_URL: str = "https://api-m.sandbox.paypal.com"
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -35,7 +38,7 @@ class Settings(BaseSettings):
                 import json
                 try:
                     return json.loads(v)
-                except Exception:
+                except (json.JSONDecodeError, ValueError):
                     pass
             return [i.strip() for i in v.split(",") if i.strip()]
         return v

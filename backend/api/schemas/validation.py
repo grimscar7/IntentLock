@@ -3,9 +3,8 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field
-
 from backend.api.models.enums import ReasonCode
+from pydantic import BaseModel, Field
 
 
 class Change(BaseModel):

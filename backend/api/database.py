@@ -2,10 +2,9 @@
 
 from collections.abc import Generator
 
+from backend.api.config import get_settings
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
-
-from backend.api.config import get_settings
 
 settings = get_settings()
 

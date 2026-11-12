@@ -8,17 +8,16 @@ from datetime import UTC, datetime, timedelta
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
-
 from backend.api.ai.service import FakeAIClient
 from backend.api.config import get_settings
 from backend.api.database import get_db
 from backend.api.main import app
 from backend.api.models.base import Base
 from backend.scripts.seed import seed_products
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 # Safety guard: Refuse to run tests if test database equals target database
 target_db = os.getenv("DATABASE_URL")

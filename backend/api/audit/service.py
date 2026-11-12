@@ -2,9 +2,6 @@
 
 from typing import Any
 
-from sqlalchemy import or_, select
-from sqlalchemy.orm import Session
-
 from backend.api.consent.explain import format_minor_units
 from backend.api.errors import AppError
 from backend.api.models.approval_snapshot import ApprovalSnapshot
@@ -13,6 +10,8 @@ from backend.api.models.enums import AuditEventType
 from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.models.quote import Quote
 from backend.api.schemas.demo import TimelineItem, TimelineResponse
+from sqlalchemy import or_, select
+from sqlalchemy.orm import Session
 
 
 def record_event(

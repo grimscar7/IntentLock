@@ -3,9 +3,8 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-
 from backend.api.schemas.validation import Change
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ProductUpdateRequest(BaseModel):

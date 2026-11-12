@@ -3,8 +3,6 @@
 from unittest.mock import patch
 
 import pytest
-from sqlalchemy import select
-
 from backend.api.audit.service import record_event
 from backend.api.config import get_settings
 from backend.api.consent.service import validate_before_capture
@@ -12,6 +10,7 @@ from backend.api.models.enums import AuditEventType
 from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.models.product_version import ProductVersion
 from backend.scripts.seed import seed_products
+from sqlalchemy import select
 
 
 @pytest.fixture(autouse=True)
@@ -52,7 +51,7 @@ def test_security_client_supplied_price_ignored(client, user_a_headers):
 @pytest.mark.e2e
 def test_security_capture_always_uses_bound_approval(db_session):
     """Client cannot substitute an arbitrary approval_id during capture validation."""
-    pv = db_session.execute(select(ProductVersion).where(ProductVersion.product_id == "laptop_b")).scalar_one()
+    db_session.execute(select(ProductVersion).where(ProductVersion.product_id == "laptop_b")).scalar_one()
 
     pa = PaymentAttempt(
         user_id="user_a",

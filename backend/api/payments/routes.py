@@ -14,12 +14,6 @@ import logging
 import uuid
 
 import httpx
-from fastapi import APIRouter, Depends
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
-from sqlalchemy import select, update
-from sqlalchemy.orm import Session
-
 from backend.api.auth import get_current_user
 from backend.api.config import get_settings
 from backend.api.consent.service import (
@@ -33,6 +27,11 @@ from backend.api.models.approval_snapshot import ApprovalSnapshot
 from backend.api.models.enums import PaymentAttemptStatus as S
 from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.payments import paypal_client as pp
+from fastapi import APIRouter, Depends
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+from sqlalchemy import select, update
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/payments", tags=["Payments"])

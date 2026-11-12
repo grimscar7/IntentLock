@@ -3,8 +3,6 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import select, update
-
 from backend.api.consent.service import (
     consume_approval,
     validate_before_capture,
@@ -16,6 +14,7 @@ from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
 from backend.scripts.seed import seed_products
+from sqlalchemy import select, update
 
 
 @pytest.fixture(autouse=True)
@@ -314,7 +313,7 @@ def test_j7_cross_user_attack(client, user_a_headers, user_b_headers):
         headers=user_a_headers,
         json={"intent_id": intent_id, "product_id": "laptop_b", "quantity": 1},
     ).json()["quote_id"]
-    approval_id = client.post("/api/approvals", headers=user_a_headers, json={"quote_id": quote_id}).json()["approval_id"]
+    client.post("/api/approvals", headers=user_a_headers, json={"quote_id": quote_id}).json()["approval_id"]
 
     # User B tries to read user A's intent -> 403 or 404
     assert client.get(f"/api/intents/{intent_id}", headers=user_b_headers).status_code in (403, 404)

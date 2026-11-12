@@ -3,13 +3,12 @@
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
-from sqlalchemy import select
-
 from backend.api.consent.service import consume_approval
 from backend.api.models.approval_snapshot import ApprovalSnapshot
 from backend.api.models.enums import ApprovalStatus
 from backend.api.models.product_version import ProductVersion
 from backend.scripts.seed import seed_products
+from sqlalchemy import select
 
 
 @pytest.fixture(autouse=True)

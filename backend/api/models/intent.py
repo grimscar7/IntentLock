@@ -2,11 +2,10 @@
 
 from typing import Any
 
-from sqlalchemy import Enum, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from backend.api.models.base import Base, JSONBType, TimestampMixin, generate_uuid
 from backend.api.models.enums import IntentStatus
+from sqlalchemy import Enum, ForeignKey, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Intent(Base, TimestampMixin):

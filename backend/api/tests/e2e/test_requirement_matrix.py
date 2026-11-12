@@ -6,8 +6,6 @@ Runs against real HTTP API with FastAPI TestClient.
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import update
-
 from backend.api.consent.service import (
     validate_before_capture,
     validate_before_create,
@@ -17,6 +15,7 @@ from backend.api.models.enums import ReasonCode
 from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.models.product_version import ProductVersion
 from backend.scripts.seed import seed_products
+from sqlalchemy import update
 
 
 @pytest.fixture(autouse=True)

@@ -3,9 +3,6 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from backend.api.models.base import (
     Base,
     JSONBType,
@@ -14,6 +11,8 @@ from backend.api.models.base import (
     utc_now,
 )
 from backend.api.models.enums import ApprovalStatus
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class ApprovalSnapshot(Base, TimestampMixin):

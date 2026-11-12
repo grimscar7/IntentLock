@@ -3,8 +3,6 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from sqlalchemy import select
-
 from backend.api.models import (
     ApprovalSnapshot,
     ApprovalStatus,
@@ -17,6 +15,7 @@ from backend.api.models import (
     QuoteStatus,
 )
 from backend.scripts.seed import seed_products
+from sqlalchemy import select
 
 
 @pytest.fixture(autouse=True)

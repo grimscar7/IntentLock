@@ -1,10 +1,5 @@
 """FastAPI application factory, global exception handling, and route registration."""
 
-from fastapi import Depends, FastAPI, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
-
 from backend.api.catalog.routes import router as catalog_router
 from backend.api.config import get_settings
 from backend.api.consent.routes import router as consent_router
@@ -13,6 +8,10 @@ from backend.api.errors import AppError, app_error_handler
 from backend.api.intents.routes import router as intents_router
 from backend.api.payments.routes import router as payments_router
 from backend.api.quotes.routes import router as quotes_router
+from fastapi import Depends, FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
 
 def create_app() -> FastAPI:

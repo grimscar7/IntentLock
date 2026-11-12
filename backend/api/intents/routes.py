@@ -1,8 +1,5 @@
 """API endpoints for user intent registration and retrieval."""
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
 from backend.api.ai.service import get_ai_client
 from backend.api.auth import get_current_user
 from backend.api.database import get_db
@@ -16,6 +13,8 @@ from backend.api.schemas import (
     IntentRequirementsUpdateRequest,
     IntentResponse,
 )
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/intents", tags=["Intents"])
 

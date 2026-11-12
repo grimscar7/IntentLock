@@ -1,12 +1,11 @@
 """Payment tests: PayPal is replaced by a fake, Vishnu's real validators are used."""
 import httpx
 import pytest
-from sqlalchemy import select
-
 from backend.api.models.approval_snapshot import ApprovalSnapshot
 from backend.api.models.enums import ApprovalStatus
 from backend.api.payments import paypal_client as pp
 from backend.scripts.seed import seed_products
+from sqlalchemy import select
 
 U1 = {"X-User-Id": "buyer_1"}
 U2 = {"X-User-Id": "buyer_2"}

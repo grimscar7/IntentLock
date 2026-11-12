@@ -4,12 +4,10 @@ Coverage gap tests — pushes the backend test suite to 100% coverage.
 
 import importlib
 import json
-import sys
 from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from backend.api.ai.service import (
     AIClient,
     FakeAIClient,
@@ -28,7 +26,6 @@ from backend.api.auth import get_current_user
 from backend.api.catalog.service import (
     create_product_version,
     evaluate_product_eligibility,
-    filter_products,
     get_current_products,
     is_change_material,
     reset_demo_catalog,
@@ -46,7 +43,6 @@ from backend.api.database import check_db_health, get_db
 from backend.api.errors import AppError
 from backend.api.intents.service import (
     create_intent,
-    get_intent_by_id,
     update_intent_requirements,
     validate_intent_requirements,
 )
@@ -60,7 +56,6 @@ from backend.api.models.enums import (
     QuoteStatus,
     ReasonCode,
 )
-from backend.api.models.intent import Intent
 from backend.api.models.payment_attempt import PaymentAttempt
 from backend.api.models.product_version import ProductVersion
 from backend.api.models.quote import Quote
@@ -352,7 +347,7 @@ class TestAuditService:
         db_session.flush()
 
         e1 = record_event(db_session, AuditEventType.QUOTE_CREATED, q.quote_id)
-        e2 = record_event(db_session, AuditEventType.APPROVAL_GRANTED, q.quote_id)
+        record_event(db_session, AuditEventType.APPROVAL_GRANTED, q.quote_id)
         db_session.commit()
 
         result = get_quote_timeline(db_session, "user_cov", q.quote_id, cursor=str(e1.event_id))
