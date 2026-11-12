@@ -96,3 +96,74 @@ When merchant catalog modifications occur:
 - Every quote creation, approval grant, validation pass/fail, and status change is logged as an immutable `AuditEvent`.
 - Sensitive credentials, card details, and auth headers are automatically redacted.
 - Chronological timeline endpoints allow users and compliance auditors to inspect the transaction history with cursor pagination.
+
+
+---
+
+## 🚀 Quickstart & Setup Guide
+
+### Prerequisites
+- **Python**: 3.13 or higher
+- **PostgreSQL**: Supabase instance or local SQLite (default fallback)
+- **PayPal Developer Account**: Sandbox client ID & secret
+
+### 1. Clone & Set Up Virtual Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/grimscar7/IntentLock.git
+cd IntentLock
+
+# Create and activate virtual environment
+python -m venv .venv
+# On Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r backend/requirements.txt
+```
+
+### 2. Configure Environment Variables
+
+Create your `.env` file based on the example:
+```bash
+cp backend/.env.example backend/.env
+```
+
+| Variable | Description | Default / Example |
+| :--- | :--- | :--- |
+| `ENV` | Environment (`development`, `test`, `production`) | `development` |
+| `DATABASE_URL` | SQLAlchemy connection string | `sqlite:///./intentlock.db` or PostgreSQL |
+| `PAYPAL_CLIENT_ID` | PayPal Sandbox Client ID | `sandbox_client_id` |
+| `PAYPAL_CLIENT_SECRET` | PayPal Sandbox Secret | `sandbox_client_secret` |
+| `PAYPAL_MODE` | PayPal operating mode | `sandbox` |
+| `SUPABASE_JWT_SECRET` | Secret for verifying Supabase auth tokens | `your-32-byte-secret-key-here` |
+| `DEMO_ADMIN_TOKEN` | Token for simulated merchant updates | `intentlock_demo_secret_2026` |
+| `AI_REWORD_ENABLED` | Enable AI-powered diff reword explanations | `false` |
+
+### 3. Database Migration & Catalog Seeding
+
+Apply Alembic migrations to construct the database schema:
+```bash
+alembic -c backend/alembic.ini upgrade head
+```
+
+Seed the default merchant catalog with baseline laptop inventory:
+```bash
+python -m backend.scripts.seed
+```
+
+### 4. Start Development Server
+
+Launch FastAPI with hot-reloading:
+```bash
+uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Verify service readiness:
+```bash
+curl http://localhost:8000/health
+# Response: {"status": "ok", "database": "connected"}
+```
