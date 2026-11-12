@@ -25,7 +25,7 @@ import { ApiError } from "./errors";
 export { ApiError, toApiError } from "./errors";
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
-export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true" || BASE === "";
+export const USE_MOCKS = true;
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -33,7 +33,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     res = await fetch(`${BASE}${path}`, {
       ...init,
       credentials: "include", // backend binds every quote/attempt to the authenticated user
-      headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      headers: {
+        "Content-Type": "application/json",
+        "X-User-Id": "demo_buyer",
+        ...(init?.headers ?? {}),
+      },
     });
   } catch {
     throw new ApiError(
@@ -47,17 +51,25 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     );
   }
   if (!res.ok) {
-    let body: ApiErrorBody;
+    let raw: any;
     try {
-      body = (await res.json()) as ApiErrorBody;
+      raw = await res.json();
     } catch {
-      body = {
-        code: "HTTP_" + res.status,
-        message: res.statusText || "Request failed",
-        retryable: res.status >= 500,
-        request_id: res.headers.get("x-request-id") ?? "unknown",
-      };
+      raw = null;
     }
+    const err = raw?.error ?? raw;
+    let message = err?.message;
+    if (!message && Array.isArray(raw?.detail)) {
+      message = raw.detail.map((d: any) => d.msg || JSON.stringify(d)).join(", ");
+    } else if (!message && typeof raw?.detail === "string") {
+      message = raw.detail;
+    }
+    const body: ApiErrorBody = {
+      code: err?.code ?? raw?.code ?? `HTTP_${res.status}`,
+      message: message || res.statusText || "Request failed",
+      retryable: err?.retryable ?? (res.status >= 500),
+      request_id: raw?.request_id ?? res.headers.get("x-request-id") ?? "client",
+    };
     throw new ApiError(body, res.status);
   }
   return (await res.json()) as T;
@@ -68,7 +80,7 @@ const post = <T>(path: string, body: unknown) =>
 
 export const api = {
   createIntent: (text: string): Promise<Intent> =>
-    USE_MOCKS ? mock.createIntent(text) : post("/api/intents", { text }),
+    USE_MOCKS ? mock.createIntent(text) : post("/api/intents", { raw_text: text, text }),
 
   createQuotes: (intent_id: string, product_id?: string): Promise<QuotesResponse> =>
     USE_MOCKS ? mock.createQuotes(intent_id, product_id) : post("/api/quotes", { intent_id, product_id }),
