@@ -11,6 +11,7 @@ from backend.api.consent.routes import router as consent_router
 from backend.api.database import check_db_health, get_db
 from backend.api.errors import AppError, app_error_handler
 from backend.api.intents.routes import router as intents_router
+from backend.api.payments.routes import router as payments_router
 from backend.api.quotes.routes import router as quotes_router
 
 
@@ -45,6 +46,7 @@ def create_app() -> FastAPI:
     app.include_router(catalog_router)
     app.include_router(quotes_router)
     app.include_router(consent_router)
+    app.include_router(payments_router)
 
     # 4. System Health Check
     @app.get("/health", tags=["System"])

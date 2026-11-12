@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>IntentLock dev checkout</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 12px}
+  button{padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer}
+  pre{background:#111;color:#8f8;padding:12px;white-space:pre-wrap;max-height:380px;overflow:auto}
+  #state{margin:10px 0;font-weight:600}
+</style>
+</head>
+<body>
+<h2>IntentLock: dev checkout (PayPal Sandbox)</h2>
+<p>1) Prepare a purchase. 2) Pay with the PayPal button. To see the safety block, click
+   "Merchant spikes price" BEFORE paying, then try to pay.</p>
+<button id="prep">1. Prepare purchase</button>
+<button id="spike">Merchant spikes price to $550</button>
+<button id="reset">Reset demo catalog</button>
+<div id="state">No approval yet.</div>
+<div id="paypal-button"></div>
+<pre id="log"></pre>
+
+<script src="https://www.paypal.com/sdk/js?client-id=__CLIENT_ID__&currency=USD&intent=capture"></script>
+<script>
+  const H = { "Content-Type": "application/json", "X-User-Id": "buyer_1" };
+  const ADMIN = { "X-Demo-Admin-Token": "__ADMIN_TOKEN__" };
+  let approvalId = null, attemptId = null;
+  const out = document.getElementById("log");
+  const log = (t, x) => { out.textContent += "\n== " + t + "\n" + JSON.stringify(x, null, 2); };
+  const setState = (t) => { document.getElementById("state").textContent = t; };
+
+  async function call(method, path, body, extra) {
+    const r = await fetch(path, { method, headers: { ...H, ...(extra || {}) },
+                                  body: body ? JSON.stringify(body) : undefined });
+    let data = null; try { data = await r.json(); } catch (e) {}
+    return { ok: r.ok, status: r.status, data };
+  }
+
+  document.getElementById("prep").onclick = async () => {
+    const i = await call("POST", "/api/intents",
+      { raw_text: "Refurbished laptop under $500 with 16GB RAM and 30-day returns" });
+    log("intent", i); if (!i.ok) return;
+    const q = await call("POST", "/api/quotes",
+      { intent_id: i.data.intent_id, product_id: "laptop_b", quantity: 1 });
+    log("quote", q); if (!q.ok) return;
+    const a = await call("POST", "/api/approvals", { quote_id: q.data.quote_id });
+    log("approval", a); if (!a.ok) return;
+    approvalId = a.data.approval_id; attemptId = null;
+    setState("Approved " + (a.data.total_minor / 100).toFixed(2) + " " + a.data.currency + ". Now pay below.");
+  };
+  document.getElementById("spike").onclick = async () => {
+    log("merchant spike", await call("PATCH", "/api/demo/products/laptop_b", { price_minor: 55000 }, ADMIN));
+  };
+  document.getElementById("reset").onclick = async () => {
+    log("reset", await call("POST", "/api/demo/reset", null, ADMIN)); setState("Catalog reset. Prepare a purchase again.");
+  };
+
+  paypal.Buttons({
+    createOrder: async () => {
+      if (!approvalId) { alert("Click 'Prepare purchase' first"); throw new Error("no approval"); }
+      const r = await call("POST", "/api/payments/create", { approval_id: approvalId });
+      log("payments/create", r);
+      if (!r.ok) { setState("BLOCKED: " + r.data.error.code + " - " + r.data.error.message); throw new Error(r.data.error.code); }
+      attemptId = r.data.attempt_id;
+      return r.data.paypal_order_id;
+    },
+    onApprove: async () => {
+      const r = await call("POST", "/api/payments/" + attemptId + "/capture");
+      log("payments/capture", r);
+      setState(r.ok ? "PAID. Capture " + r.data.capture_id : "NOT PAID: " + r.data.error.code + " - " + r.data.error.message);
+    },
+    onCancel: () => { log("cancel", "Buyer cancelled, no payment taken"); setState("Cancelled. No payment taken."); },
+    onError: (e) => log("paypal error", String(e)),
+  }).render("#paypal-button");
+</script>
+</body>
+</html>

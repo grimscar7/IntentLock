@@ -48,6 +48,14 @@ class PaymentAttempt(Base, TimestampMixin):
         nullable=True,
         index=True,
     )
+    paypal_capture_id: Mapped[str | None] = mapped_column(
+        String(128),
+        nullable=True,
+    )
+    last_error_code: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
     idempotency_key: Mapped[str] = mapped_column(
         String(128),
         unique=True,

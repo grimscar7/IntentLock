@@ -225,3 +225,13 @@ web/.next/
 web/next-env.d.ts
 web/.env.local
 web/.env.*.local
+
+intentlock.db
+samples.txt
+for_claude*.txt
+.vscode/
+
+intentlock.db
+samples.txt
+for_claude*.txt
+.vscode/
