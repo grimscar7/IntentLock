@@ -17,7 +17,7 @@ class ProductUpdateRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    @field_validator("price_minor")
+    @field_validator("price_minor", mode="before")
     @classmethod
     def validate_price(cls, v: int | None) -> int | None:
         if v is not None:
@@ -27,7 +27,7 @@ class ProductUpdateRequest(BaseModel):
                 raise ValueError("price_minor must be non-negative")
         return v
 
-    @field_validator("return_days")
+    @field_validator("return_days", mode="before")
     @classmethod
     def validate_returns(cls, v: int | None) -> int | None:
         if v is not None:
