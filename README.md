@@ -63,3 +63,36 @@ flowchart TD
     Gate1 -.->|Price or Term Changed| Invalidate[Invalidate & Explain Change]
     Gate2 -.->|Price or Term Changed| Invalidate
 ```
+
+
+---
+
+## 🔒 Core Capabilities & Guarantees
+
+### 1. Grounded Intent & Options Engine
+- **Structured Criteria Extraction**: Natural language inputs are parsed into structured constraints: `category`, `max_total_minor`, `currency`, `min_ram_gb`, `min_storage_gb`, `brand_preferences`, and `min_return_days`.
+- **Code-Based Catalog Filtering**: AI never decides product eligibility; SQL / Python code-level evaluation strictly checks matching items against active `ProductVersion` records.
+- **Truthful Options Explanation**: Products that fail constraints receive grounded rejection reasons (e.g. `Price $550 exceeds your maximum budget of $500 USD`).
+
+### 2. Authoritative Dynamic Quoting
+- **Zero Client Price Trust**: Client requests only supply `product_id` and `quantity`. Price, shipping, and tax are calculated server-side from active catalog records.
+- **Quote Expiration & Revocation**: Quotes feature a strict time-to-live (`15 minutes` default). Expired quotes cannot be approved or converted into payments.
+- **Version Pinning**: Quotes are permanently locked to an immutable `ProductVersion` snapshot.
+
+### 3. Dual-Gate Consent & Tamper Verification
+IntentLock implements a strict two-phase validation handshake:
+| Checkpoint | When Executed | Security Invariant Verified |
+| :--- | :--- | :--- |
+| **Gate 1 (`validate_before_create`)** | Before calling PayPal Order Create | Approval is `ACTIVE`, user owns the approval, quote is unexpired, and approved terms match current live product terms. |
+| **Gate 2 (`validate_before_capture`)** | Right before calling PayPal Capture | Live catalog price has not spiked, product version has not changed, return policy has not degraded, and total payment matches authorized snapshot. |
+
+### 4. Real-Time Invalidation & Plain-English Change Explanations
+When merchant catalog modifications occur:
+- Any active approval bound to modified products is instantly invalidated (`ApprovalStatus.INVALIDATED`).
+- An explainability engine produces user-friendly diff summaries (e.g., `Price increased by $70.00 (from $480.00 to $550.00); Return policy reduced from 30 days to 14 days`).
+- Re-quoting requires explicit approval and verifies that updated terms still respect the buyer's original intent budget.
+
+### 5. Audit Trail & Non-Repudiation
+- Every quote creation, approval grant, validation pass/fail, and status change is logged as an immutable `AuditEvent`.
+- Sensitive credentials, card details, and auth headers are automatically redacted.
+- Chronological timeline endpoints allow users and compliance auditors to inspect the transaction history with cursor pagination.
