@@ -1,6 +1,6 @@
 # IntentLock Architecture & Data Contracts
 
-> **FROZEN DATA CONTRACTS FOR HARI (PAYPAL INTEGRATION) AND SABARI (FRONTEND)**  
+> **FROZEN DATA CONTRACTS FOR PAYPAL INTEGRATION AND FRONTEND**  
 > **Status:** Phase 4 (Consent Validators & Handshake) Locked  
 > **Author:** Vishnu (Backend Lead)  
 > **Rule:** Field names, types, and enum values in this document are immutable across all branches.
@@ -12,8 +12,8 @@
 1. **Money Rule:** All monetary amounts MUST be represented as non-negative integers in minor units named `*_minor` (e.g., USD $480.00 = `48000`). Floating-point numbers are strictly forbidden for pricing calculations and storage.
 2. **Timestamps:** All timestamps are ISO 8601 strings in UTC timezone (`YYYY-MM-DDTHH:MM:SSZ`).
 3. **Immutability:** `ProductVersion` and `ApprovalSnapshot` rows are append-only / immutable history. When merchant data changes, a new version is created; snapshots are never mutated retroactively.
-4. **Ownership Boundary & Call Order for Hari:**
-   Hari must follow this exact call order in `paypal-integration`:
+4. **Ownership Boundary & Call Order for PayPal Integration:**
+   The exact call order in `paypal-integration`:
    ```
    1. validate_before_create(db, user_id, approval_id)
          │  (Must return allowed=True, otherwise ABORT order creation)
@@ -97,9 +97,9 @@ When multiple discrepancies occur simultaneously, all differences are recorded i
 
 ---
 
-## 4. Consent Validator Signatures & Usage (For Hari)
+## 4. Consent Validator Signatures & Usage (PayPal Integration)
 
-These python functions live in `backend/api/consent/service.py` and are imported directly into Hari's payment service:
+These python functions live in `backend/api/consent/service.py` and are imported directly into the payment service:
 
 ### 4.1 `validate_before_create`
 ```python

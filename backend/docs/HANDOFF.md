@@ -201,9 +201,9 @@ curl -X GET http://127.0.0.1:8000/api/quotes/47ffefa4-a108-47d7-bba9-0bc966f65f4
 
 ---
 
-## 7. Integration Guide for Hari (Payments Engineer)
+## 7. Integration Guide (Payments Engineer)
 
-Hari owns the PayPal payment lifecycle in `backend/api/payments/` on branch `paypal-integration`.
+PayPal payment lifecycle in `backend/api/payments/` on branch `paypal-integration`.
 
 ### Call Order Flow
 ```
@@ -341,7 +341,7 @@ User Search Text
 5. POST /api/approvals/{approval_id}/validate (Optional Preflight Check)
        │  └── If allowed=True, open PayPal SDK button
        ▼
-6. PayPal Checkout Modal Initiated (Hari's Endpoint)
+6. PayPal Checkout Modal Initiated
 ```
 
 ### Demo Story: Handling Blocked Validation & Reapproval
@@ -387,8 +387,8 @@ All errors return the machine-readable schema:
 - **Source Branch:** `backend`
 - **Target Branch:** `main`
 - **Protected Files:**
-  - `backend/api/payments/*`: Owned exclusively by Hari (`paypal-integration`). Vishnu made zero edits or additions in this folder.
-  - `frontend/*`: Owned exclusively by Sabari. Vishnu touched zero files in `frontend/`.
+  - `backend/api/payments/*`: (`paypal-integration`).
+  - `frontend/*`: Frontend application.
 - **Merge Conflict Status:**
   - Merging `origin/main` into `backend` was dry-run tested (`git merge --no-commit --no-ff origin/main`). Zero conflicts were encountered (`Automatic merge went well; stopped before committing as requested`).
 - **Readiness:**

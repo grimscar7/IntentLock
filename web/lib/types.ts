@@ -2,7 +2,7 @@
  * Frontend view of the API contract agreed in the IntentLock execution plan (section 4).
  *
  * Backend owners: Vishnu (intents, quotes, approvals, events, merchant catalog)
- *                 Hari   (payments)
+ *                 Payments (PayPal integration)
  * If a backend shape differs from what is here, update THIS file first —
  * every screen reads its types from here.
  *
@@ -138,7 +138,7 @@ export type QuoteDetail = Quote & {
   requires_new_approval: boolean;
   /** Other catalog products that still meet the buyer's requirements. */
   alternatives: Array<{ product_id: string; name: string; price: Money; merchant: string }>;
-  /** Set once Hari's capture handler has persisted a verified result. */
+  /** Set once capture handler has persisted a verified result. */
   payment_attempt_id: string | null;
 };
 
@@ -151,7 +151,7 @@ export type AuditEvent = {
   details: string; // already redacted by backend
 };
 
-// ---------- GET /api/payments/{attempt_id} (Hari) ----------
+// ---------- GET /api/payments/{attempt_id} ----------
 export type PaymentAttempt = {
   attempt_id: string;
   approval_id: string;

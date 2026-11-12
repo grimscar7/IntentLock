@@ -68,7 +68,7 @@ Executed in `backend/api/tests/e2e/test_journeys.py`:
 | **J6: Currency Mismatch** | Quote issued in USD, attempted payment presented in EUR $\rightarrow$ Validator detects currency divergence $\rightarrow$ Blocks with `CURRENCY_MISMATCH`. | `test_j6_currency_mismatch` | **PASS** |
 | **J7: Out of Stock / Unlisted** | Product inventory marked unavailable (`available=False`) $\rightarrow$ Pre-flight validation blocks with `INSUFFICIENT_STOCK`. | `test_j7_out_of_stock_invalidation` | **PASS** |
 | **J8: Multi-Item Quote Isolation** | Quote containing multiple items $\rightarrow$ Material change on item 2 invalidates entire quote approval atomically. | `test_j8_multi_item_quote_isolation` | **PASS** |
-| **J9: Hari Payments Contract** | Full payment lifecycle integration simulating Hari's payment service: pre-create check $\rightarrow$ pre-capture check $\rightarrow$ capture $\rightarrow$ consume. | `test_j9_hari_integration_contract` | **PASS** |
+| **J9: Payments Integration Contract** | Full payment lifecycle integration simulating payment service: pre-create check $\rightarrow$ pre-capture check $\rightarrow$ capture $\rightarrow$ consume. | `test_j9_paypal_integration_contract` | **PASS** |
 
 ---
 

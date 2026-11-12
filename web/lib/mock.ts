@@ -4,7 +4,7 @@
  * and the buyer page (another tab) sees it.
  *
  * FRONTEND DEVELOPMENT ONLY. The real rules live in Vishnu's policy engine and
- * Hari's payment handlers; nothing here is a security boundary.
+ * the payment handlers; nothing here is a security boundary.
  */
 import type {
   ApprovalSnapshot,
@@ -436,7 +436,7 @@ export async function getPayment(attempt_id: string): Promise<PaymentAttempt> {
 }
 
 /**
- * DEV-ONLY stand-in for Hari's PayPal component, used by MockPaymentStub so the
+ * DEV-ONLY stand-in for the PayPal component, used by MockPaymentStub so the
  * receipt and timeline can be built and demoed before real checkout is wired in.
  * Not used when NEXT_PUBLIC_USE_MOCKS is off.
  */

@@ -339,14 +339,14 @@ def test_j8_ai_down(client, user_a_headers):
 
 
 @pytest.mark.e2e
-def test_j9_hari_integration_contract(db_session):
-    """J9: Verify Hari's exact call order stub using public consent service functions."""
+def test_j9_paypal_integration_contract(db_session):
+    """J9: Verify PayPal integration call order stub using public consent service functions."""
     # 1. Setup seed catalog & models directly
     pv = db_session.execute(select(ProductVersion).where(ProductVersion.product_id == "laptop_b")).scalar_one()
 
     # Create dummy approved quote
     quote = Quote(
-        user_id="hari_buyer",
+        user_id="test_buyer",
         intent_id="intent-j9",
         product_version_id=pv.product_version_id,
         merchant_id=pv.merchant_id,
@@ -363,7 +363,7 @@ def test_j9_hari_integration_contract(db_session):
     db_session.flush()
 
     approval = ApprovalSnapshot(
-        user_id="hari_buyer",
+        user_id="test_buyer",
         quote_id=quote.quote_id,
         product_id=pv.product_id,
         product_version_id=pv.product_version_id,
@@ -379,16 +379,16 @@ def test_j9_hari_integration_contract(db_session):
     db_session.add(approval)
     db_session.commit()
 
-    # Step 1: Hari calls validate_before_create
-    v_create = validate_before_create(db=db_session, user_id="hari_buyer", approval_id=approval.approval_id)
+    # Step 1: Pre-create validation
+    v_create = validate_before_create(db=db_session, user_id="test_buyer", approval_id=approval.approval_id)
     assert v_create.allowed is True
 
-    # Step 2: Hari creates PayPal order and persists payment_attempt
+    # Step 2: Creates PayPal order and persists payment_attempt
     attempt = PaymentAttempt(
-        user_id="hari_buyer",
+        user_id="test_buyer",
         approval_id=approval.approval_id,
-        paypal_order_id="PAYPAL-HARI-12345",
-        idempotency_key="idemp-hari-12345",
+        paypal_order_id="PAYPAL-ORDER-12345",
+        idempotency_key="idemp-order-12345",
         total_minor=48000,
         currency="USD",
     )
@@ -396,20 +396,20 @@ def test_j9_hari_integration_contract(db_session):
     db_session.commit()
 
     # Step 3: Buyer approves on PayPal
-    # Step 4: Hari calls validate_before_capture
+    # Step 4: Validate before capture
     v_capture = validate_before_capture(
-        db=db_session, user_id="hari_buyer", payment_attempt_id=attempt.payment_attempt_id
+        db=db_session, user_id="test_buyer", payment_attempt_id=attempt.payment_attempt_id
     )
     assert v_capture.allowed is True
 
-    # Step 5: Hari captures PayPal payment
-    # Step 6: Hari calls consume_approval
+    # Step 5: Capture PayPal payment
+    # Step 6: Consume approval
     consumed = consume_approval(db=db_session, approval_id=approval.approval_id)
     assert consumed is True
 
     # Replay protection: second capture blocked
     v_re_capture = validate_before_capture(
-        db=db_session, user_id="hari_buyer", payment_attempt_id=attempt.payment_attempt_id
+        db=db_session, user_id="test_buyer", payment_attempt_id=attempt.payment_attempt_id
     )
     assert v_re_capture.allowed is False
     assert v_re_capture.reason_code == ReasonCode.APPROVAL_ALREADY_CONSUMED

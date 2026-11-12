@@ -1,4 +1,4 @@
-"""PayPal Sandbox payment routes (owner: Hari).
+"""PayPal Sandbox payment routes.
 
 Call order from backend/docs/CONTRACTS.md:
   validate_before_create -> create PayPal order -> buyer approves in PayPal

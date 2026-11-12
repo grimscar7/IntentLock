@@ -132,7 +132,7 @@ curl -X POST http://localhost:8000/api/demo/reset \
 
 ---
 
-## Consent Handshake Order for Hari (`paypal-integration`)
+## Consent Handshake Order (`paypal-integration`)
 
 1. Call `validate_before_create(db, user_id, approval_id)` -> must be `allowed: true`.
 2. Create PayPal order and store `PaymentAttempt(payment_attempt_id, user_id, approval_id, total_minor, currency, ...)`.

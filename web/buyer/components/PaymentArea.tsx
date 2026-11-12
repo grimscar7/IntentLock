@@ -5,10 +5,9 @@ import { devSimulatePayment } from "@/lib/mock";
 import { toApiError, type ApiError } from "@/lib/errors";
 
 /**
- * Page layout for Hari's PayPal checkout component (web/payments — owned by Hari).
+ * Page layout for PayPal checkout component (web/payments).
  *
- * Sabari owns this frame; Hari owns everything that talks to PayPal.
- * To plug in the real checkout, Hari renders his component where <CheckoutSlot> is,
+ * To plug in the real checkout, render the component where <CheckoutSlot> is,
  * using these props:
  */
 export type CheckoutComponentProps = {
@@ -39,7 +38,7 @@ export function PaymentArea(props: CheckoutComponentProps) {
 }
 
 /**
- * >>> HARI: replace the body of this function with your PayPal component, e.g.
+ * Render PayPal component, e.g.:
  *     return <PayPalCheckout {...props} />;
  * (import it from "@/payments/PayPalCheckout").
  */
@@ -69,7 +68,7 @@ function MockPaymentStub({ quoteId, onPaid, onCancelled, onError }: CheckoutComp
   }
   return (
     <div className="rounded-lg border border-dashed border-warn/50 bg-warn-soft/50 p-4">
-      <p className="mb-3 text-xs font-medium text-warn">Mock checkout — stands in for Hari&apos;s PayPal component</p>
+      <p className="mb-3 text-xs font-medium text-warn">Mock checkout — PayPal Sandbox component</p>
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => run("approve")}

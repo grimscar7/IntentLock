@@ -139,7 +139,7 @@ export const api = {
       ? mock.approve(quote_id)
       : post("/api/approvals", { quote_id }),
 
-  /** Read-only. Creating/capturing payments is Hari's component (web/payments). */
+  /** Read-only. Creating/capturing payments uses PayPal checkout component (web/payments). */
   getPayment: (attempt_id: string): Promise<PaymentAttempt> =>
     USE_MOCKS
       ? mock.getPayment(attempt_id)

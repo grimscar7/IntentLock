@@ -30,9 +30,9 @@ The quote page polls every 3 s, so a merchant change made in another tab shows u
 ```
 web/
   app/        routes (thin — just render the screens below)
-  buyer/      Sabari — buyer screens and components
-  merchant/   Sabari — merchant panel
-  payments/   Hari   — PayPal checkout component (not created here)
+  buyer/      Buyer screens and components
+  merchant/   Merchant panel
+  payments/   PayPal checkout component
   lib/
     types.ts  API contract types — update here first if a backend shape changes
     api.ts    typed client; switches between real backend and mocks
@@ -40,7 +40,7 @@ web/
     mock.ts   dev-only mock backend (not a security boundary)
 ```
 
-## For Hari — plugging in PayPal checkout
+## Plugging in PayPal checkout
 
 The payment frame is `buyer/components/PaymentArea.tsx`. Replace the body of `CheckoutSlot` with your component:
 
